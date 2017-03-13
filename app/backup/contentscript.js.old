@@ -1,0 +1,75 @@
+'use strict';
+
+const injectCSS = (file, node) => {
+    const dom = document.getElementsByTagName(node)[0];
+    const css = document.createElement('link');
+    css.setAttribute('rel', 'stylesheet');
+    css.setAttribute('type', 'text/css');
+    css.setAttribute('href', file);
+    return dom.appendChild(css);
+}
+
+const injectInline = (func, node) => {    
+    const dom = document.getElementsByTagName(node)[0];
+    const script = document.createElement('script');
+    const src = '\n(' + func + ')()\n';
+    console.log(src);
+    //script.setAttribute('type', 'text/script');
+    //script.setAttribute('text', src);
+    script.text = src;
+    return dom.appendChild(script);
+}
+
+// chrome.runtime.sendMessage({type:'miku'}, (res) => {
+//     avt['miku'] = res;   
+    
+//     view();
+// });
+
+const view = () => {
+    // console.log(avt);
+    const div = document.createElement('div');
+    div.className = 'miku';
+    div.innerHTML = '<img src = ' + avt['miku'] + '>';
+
+    // const h = (Math.floor(Math.random()*10)) * 10;
+
+    const dom = document.getElementsByTagName('body')[0];
+    dom.insertBefore(div, dom.firstChild);
+    
+    //end();
+}
+
+const end = () => {
+    // setTimeout(()=>{
+    //     console.log('miku');    
+    // }, 1000);
+    //setTimeout(() =>{
+    console.log('hoge');
+    const del = document.querySelector('div.miku'); 
+    
+    console.log(del);
+       
+    del.addEventListener('transitionend', (e)=>{
+        console.log(e);
+    }, true);
+    //},1000);
+};
+
+/** Main Script */
+const avt = {};
+
+console.log('\'Allo \'Allo! Content script');
+
+//get image
+avt['miku'] = chrome.extension.getURL('/images/miku.gif');
+
+//inject css
+injectCSS(chrome.extension.getURL('/style.css'), 'body');
+
+view();
+
+//inject js
+injectInline(end.toString(), 'body');
+
+
